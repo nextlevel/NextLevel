@@ -90,6 +90,7 @@ public protocol NextLevelDeviceDelegate: AnyObject {
 	var nextLevelCurrentDeviceOrientation: (() -> AVCaptureVideoOrientation)? { get }
     func nextLevelDevicePositionWillChange(_ nextLevel: NextLevel)
     func nextLevelDevicePositionDidChange(_ nextLevel: NextLevel)
+    func nextLevelDeviceOrientationWillChange(_ nextLevel: NextLevel)
     func nextLevel(_ nextLevel: NextLevel, didChangeDeviceOrientation deviceOrientation: NextLevelDeviceOrientation)
 
     // format
@@ -117,6 +118,7 @@ public extension NextLevelDeviceDelegate {
 	// Empty default implementations of recently added protocol methods, to make them optional and not break existing code.
 
 	var nextLevelCurrentDeviceOrientation: (() -> AVCaptureVideoOrientation)? { nil }
+    func nextLevelDeviceOrientationWillChange(_ nextLevel: NextLevel) { }
 
 	func nextLevel(_ nextLevel: NextLevel, didChangeExposureDuration exposureDuration: CMTime) {
 	}

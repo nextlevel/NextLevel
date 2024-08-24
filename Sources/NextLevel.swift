@@ -311,6 +311,13 @@ public class NextLevel: NSObject {
     public var deviceOrientation: NextLevelDeviceOrientation = .portrait {
         didSet {
             automaticallyUpdatesDeviceOrientation = false
+
+            guard deviceOrientation != oldValue else { return }
+
+            DispatchQueue.main.async {
+                self.deviceDelegate?.nextLevelDeviceOrientationWillChange(self)
+            }
+
 			_sessionQueue.sync {
 				updateVideoOrientation()
 			}
@@ -323,7 +330,7 @@ public class NextLevel: NSObject {
     public var photoStabilizationEnabled: Bool = false
 
     /// Video stabilization mode
-    public var videoStabilizationMode: NextLevelVideoStabilizationMode = .auto {
+    public var videoStabilizationMode: NextLevelVideoStabilizationMode = .off {
         didSet {
             self.executeClosureAsyncOnSessionQueueIfNecessary {
                 self.beginConfiguration()
@@ -987,6 +994,8 @@ extension NextLevel {
                 if input.device.hasMediaType(AVMediaType.video) {
                     self.addCaptureDeviceObservers(input.device)
                     self._videoInput = input
+
+					updateVideoOutputSettings()
                 } else {
                     self._audioInput = input
                 }
@@ -1047,8 +1056,6 @@ extension NextLevel {
             if session.canAddOutput(videoOutput) {
                 session.addOutput(videoOutput)
                 videoOutput.setSampleBufferDelegate(self, queue: self._sessionQueue)
-
-                self.updateVideoOutputSettings()
 
                 return true
             }
